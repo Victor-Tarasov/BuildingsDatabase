@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class BuildingsDbQueryExample {
     private static Connection connection;
@@ -24,10 +23,7 @@ public class BuildingsDbQueryExample {
         String firstQuery = "SELECT Country.Name FROM Country " +
                 "INNER JOIN City ON City.CountryID = Country.CountryID GROUP BY Country.CountryID " +
                 "HAVING SUM(City.Population) > 400";
-        Set<String> expectedResult = new HashSet<>();
-        expectedResult.add("Brazil");
-        expectedResult.add("Germany");
-        testQuery(expectedResult, firstQuery);
+        testQuery(Arrays.asList("Brazil", "Germany"), firstQuery);
     }
 
     private static void testSecondQuery() throws ClassNotFoundException, SQLException, IOException {
@@ -36,22 +32,21 @@ public class BuildingsDbQueryExample {
                 "LEFT JOIN Buildnig ON Buildnig.CityID = City.CityID " +
                 "GROUP BY Country.CountryID " +
                 "HAVING COUNT(Buildnig.BuildnigID) = 0";
-        Set<String> expectedResult = new HashSet<>();
-        expectedResult.add("Ukraine");
-        expectedResult.add("Brazil");
-        testQuery(expectedResult, firstQuery);
+        testQuery(Arrays.asList("Ukraine", "Brazil"), firstQuery);
     }
 
-    private static void testQuery(Set<String> expectedResult, String query) throws ClassNotFoundException, SQLException, IOException {
+    private static void testQuery(List<String> expectedResult, String query) throws ClassNotFoundException, SQLException, IOException {
         ResultSet resultSet = connection.createStatement().executeQuery(query);
-        Set<String> actualResult = new HashSet<>();
+        List<String> actualResult = new ArrayList<>();
         while (resultSet.next()) {
             actualResult.add(resultSet.getString(1));
         }
         printResult(expectedResult, actualResult, query);
     }
 
-    private static void printResult(Set<String> expectedResult, Set<String> actualResult, String query) {
+    private static void printResult(List<String> expectedResult, List<String> actualResult, String query) {
+        Collections.sort(expectedResult);
+        Collections.sort(actualResult);
         if (expectedResult.equals(actualResult)) {
             System.out.println(query);
             System.out.println("Result: " + actualResult);

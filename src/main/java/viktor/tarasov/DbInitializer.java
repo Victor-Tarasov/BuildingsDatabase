@@ -15,7 +15,7 @@ public class DbInitializer {
     private static Server server;
 
     public static Connection startUp() throws ClassNotFoundException, SQLException, IOException {
-        if(connection != null) {
+        if (connection != null) {
             return connection;
         }
 
